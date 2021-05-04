@@ -1,0 +1,189 @@
+---
+title: "part2"
+output: html_document
+---
+
+
+## R Markdown
+
+---
+title: "part2"
+output: html_document
+---
+
+
+## R Markdown
+There is always the need to get familiar with string operations such as splitting strings, combining them, subsetting and much more.This kind of technique can come handy when dealing with string data such as when building NLP models.
+#1. Sections: Introduction, Prerequisites, String Basics, String Length, Combining Strings, Subsetting Strings,Locales; Exercises: 1, 3, 4
+1)
+```{r}
+library("tidyverse")
+```
+Paste() separates strings by spaces while paste0() does not separate strings with spaces. str_c is equivalent to paste0().
+
+3)
+```{r}
+s <- c("a", "abc", "abcd", "abcde", "abcdef")
+q <- str_length(x)
+l <- ceiling(L / 2)
+str_sub(s, q, l)
+```
+The choice becomes abitrary if the string length is even.
+
+4) It wraps text to fits within a certain width.
+
+#2. Sections: Matching patterns with regular expressions, Basic Matches; Exercises: 1, 2, 3
+1) 
+\": Escapes the next character in the string.
+"\\": Resolves to \ in the expression.
+"\\\": The first two backslashes will resolves to a literal backslash in the regular expression, the third will work like the first one.
+
+2) 
+```{r}
+str_view("\"'\\", "\"'\\\\", match = TRUE)
+```
+
+3)
+It matches any patterns that are a dot followed by any character, repeated three times.
+
+#3. Sections: Anchors; Exercises: None
+#4. Sections: Character classes and alternatives; Exercises: 1, 4
+1)
+#Words starting with vowels
+```{r}
+str_subset(stringr::words, "^[aeiou]")
+```
+
+#Words that contain only consonants: Use the negate argument of str_subset.
+```{r}
+str_subset(stringr::words, "[aeiou]", negate=TRUE)
+```
+
+#Words that end with “-ed” but not ending in “-eed”.
+```{r}
+str_subset(stringr::words, "[^e]ed$")
+```
+
+#Words ending in ing or ise:
+```{r}
+str_subset(stringr::words, "i(ng|se)$")
+```
+4) ou|ise$|ae|oe|yse$
+
+
+#5. Sections: Repetition; Exercises: 2, 3
+2) 
+1) ^.*$ will match any string. For example.
+
+2) "\\{.+\\}" will match any string with curly braces surrounding at least one character.
+
+3) \d{4}-\d{2}-\d{2} will match four digits followed by a hyphen, followed by two digits followed by a hyphen, followed by another two digits.
+
+4)"\\\\{4}" is \\{4} will match four backslashes.
+
+3)
+This regex finds all words starting with three consonants.
+```{r}
+str_view(words, "^[^aeiou]{3}", match = TRUE)
+```
+This regex finds three or more vowels in a row:
+```{r}
+str_view(words, "[aeiou]{3,}", match = TRUE)
+```
+This regex finds two or more vowel-consonant pairs in a row.
+```{r}
+str_view(words, "([aeiou][^aeiou]){2,}", match = TRUE)
+```
+
+#6. Sections: Grouping and Back references; Exercises: 1
+1)
+1)(.)\1\1: The same character appearing three times in a row.
+2)"(.)(.)\\2\\1": A pair of characters followed by the same pair of characters in reversed order.
+3)(..)\1: Any two characters repeated.
+3)"(.).\\1.\\1": A character followed by any character, the original character, any other character, the original character again.
+4)"(.)(.)(.).*\\3\\2\\1" Three characters followed by zero or more characters of any kind followed by the same three characters but in reverse order.
+
+#7. Sections: Tools, Detect Matches; Exercises: 1
+1)
+Words that start or end with x?
+```{r}
+words[str_detect(words, "^x|x$")]
+```
+Words starting with vowel and ending with consonant.
+```{r}
+str_subset(words, "^[aeiou].*[^aeiou]$") %>% head()
+```
+There is no simple regular expression to match those words.
+
+#8. Sections: Extract matches; Exercises: 2
+2)
+1)
+```{r}
+str_extract(sentences, "[A-ZAa-z]+") %>% head()
+```
+2)
+```{r}
+combination <- "\\b[A-Za-z]+ing\\b"
+sentences_with_ing <- str_detect(sentences, combination)
+unique(unlist(str_extract_all(sentences[sentences_with_ing], combination))) %>%
+  head()
+```
+3)
+```{r}
+unique(unlist(str_extract_all(sentences, "\\b[A-Za-z]{3,}s\\b"))) %>%
+  head()
+```
+
+#9. Sections: Grouped Matches; Exercises: 1, 2
+1)
+```{r}
+str <- "\\b(one|two|three|four|five|six|seven|eight|nine|ten) +(\\w+)"
+sentences[str_detect(sentences, str)] %>%
+  str_extract(str)
+```
+
+2)
+```{r}
+cntrn <- "([A-Za-z]+)'([A-Za-z]+)"
+sentences[str_detect(sentences, cntrn)] %>%
+  str_extract(cntrn) %>%
+  str_split("'")
+```
+
+#10. Sections: Replacing Matches; Exercises: 1, 2
+1)
+```{r}
+str_replace_all("past/present/future", "/", "\\\\")
+```
+2)
+```{r}
+ltrs<- c("C" = "c", "B" = "b", "Q" = "q", "W" = "w")
+lwds <- str_replace_all(words, pattern = ltrs)
+head(lwds)
+```
+
+#11. Sections: Splitting; Exercises: 1,2, 3
+1)
+```{r}
+Given <- c("apples, pears, and bananas")
+str_split(Given, ", +(and +)?")[[1]]
+```
+
+2) It splits and removes punctuations while leaving behind non-characters that make up the words.
+
+3) It splits a string into individual characters.
+```{r}
+str_split("ab. cd|agt", "")[[1]]
+```
+
+#12. Sections: Find Matches; Exercises: 1
+1)
+```{r}
+#With regex
+str_subset(c("a\\b", "ab"), "\\\\")
+```
+
+```{r}
+#with fixed
+str_subset(c("a\\b", "ab"), fixed("\\"))
+```
