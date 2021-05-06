@@ -1,0 +1,82 @@
+---
+title: "part3"
+output: html_document
+---
+
+
+## R Markdown
+---
+title: "part3"
+output: html_document
+---
+
+
+
+## R Markdown
+This part of data exploration will mainly deal with data in date-time format,and plotting the data for visualization. This skill will come in handy when dealing with time series analysis. 
+#1. Sections: Introduction, Prerequisites, Creating Date / Times, From Strings, From Individual Components, From other types; Exercises: 3 
+3)
+```{r}
+mdy(d1)
+
+ymd(d2)
+
+dmy(d3)
+
+mdy(d4)
+
+mdy(d5)
+```
+
+
+#2. Sections: Date Time Components, Getting Components, Rounding, Setting Components; Exercises:  2, 3, 4, 5
+2)
+```{r}
+flights_dt %>%
+  mutate(dep_time_ = sched_dep_time + dep_delay * 60) %>%
+  filter(dep_time_ != dep_time) %>%
+  select(dep_time_, dep_time, sched_dep_time, dep_delay)
+```
+The dep_time = sched_dep_time + dep_delay considering that there was consistency.
+
+3)
+```{r}
+flights_dt %>%
+  mutate(
+    flight_duration = as.numeric(arr_time - dep_time),
+    air_time_mins = air_time,
+    diff = flight_duration - air_time_mins
+  ) %>%
+  select(origin, dest, flight_duration, air_time_mins, diff)
+```
+
+4) sched_dep_time should be used because it is used when booking a flight. 
+dep_time can be afffected by other factors such as delays.
+
+5)
+```{r}
+flights_dt %>%
+  mutate(dow = wday(sched_dep_time)) %>%
+  group_by(dow) %>%
+  summarise(
+    dep_delay = mean(dep_delay),
+    arr_delay = mean(arr_delay, na.rm = TRUE)
+  ) %>%
+  print(n = Inf)
+```
+The lowest average departure delay time was recorded on Saturday hence the best day to travel.
+
+
+#3. Sections: Time Spans, Durations, Periods, Intervals; Exercises: 3, 5
+3)
+#A vector of the first day of the month for every month in 2015:
+```{r}
+ymd("2015-01-01") + months(0:11)
+```
+
+# vector of dates giving the first day of every month in the current year.
+```{r}
+floor_date(today(), unit = "year") + months(0:11)
+```
+
+#4. Sections: Time Zones; No Exercise
