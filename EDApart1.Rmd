@@ -1,0 +1,253 @@
+---
+title: "Part1EDA"
+output: html_document
+---
+
+## R Markdown
+#Sections: Introduction, Prerequisites, First Steps, The mpg Data Frame, Creating a ggplot, A Graphing Template
+
+#Exercises: 1, 2 (Read it as mpg and not mtcars), 3,4, 5
+#Introduction
+1)
+```{r}
+library("tidyverse")
+ggplot(data = mpg)
+```
+An empty plot is produced with the x and y axis.
+
+2)
+```{r}
+Str(mpg)
+```
+There are 234 rows and 11 columns
+
+3)
+```{r}
+?mpg
+```
+drv is a categorical variable.
+
+4)Scatterplot of hwy vs cyl
+```{r}
+ggplot(mpg, aes(x = cyl, y = hwy)) +
+  geom_point()
+```
+
+5)Scaterplot of class vs drv
+```{r}
+ggplot(mpg, aes(x = class, y = drv)) +
+  geom_point()
+```
+The scatterplot has only a few points on it because we used a categorical variable
+
+
+#Sections: Aesthetic Mappings
+
+#Exercises: 1, 2, 3, 5, 6
+1)
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, colour = "blue"))
+```
+The colour agrument is included in the mapping arguments hence treated as an aesthetic parameter.
+
+2)
+```{r}
+str(mpg)
+```
+The categorical variables are manufacturer,model,trans,drv,fl,class
+
+The continuos variables are displ,year,cyl,cty,hwy
+
+3)Mapping a continuous variable to color,size and shape.
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy, colour = cty)) +
+  geom_point()
+```
+The continuous variable uses a scale.
+ 
+In the case where the variable is used for size, the sizes of the points vary continuously with respect to their sizes.
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy, size = cty)) +
+geom_point()
+```
+
+When mapped to shape it gives an error as shown below.
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy, shape = cty)) +
+geom_point()
+```
+
+4)
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy, colour = hwy, size = displ)) +
+  geom_point()
+```
+A plot is produced.
+
+5) Stroke changes the size of the border for shapes as shown below.
+```{r}
+ggplot(mtcars, aes(wt, mpg)) +
+  geom_point(shape = 21, colour = "black", fill = "white", size = 5, stroke = 5)
+```
+
+6)
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy, colour = displ < 5)) +
+  geom_point()
+```
+ggplot() displ<5 evaluates to true or false hence giving distinct categories of True or false.
+
+
+#Sections: Common Problems, Facets
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(drv ~ .)
+```
+It appears like dimensions are ignored when faceting.
+
+4)
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_wrap(~ class, nrow = 2)
+```
+when the number of categories increase, there is no much difference in the colors.
+
+5)
+```{r}
+?facet_wrap
+```
+nrow is the number of rows and ncol the number of columns desired.
+A grid lacks nrow and ncol because they are automatically specified automatically by the attributes used.
+The nrow and ncol are not that important for facet_grid().
+
+
+
+#Sections: Geometric Objects
+
+#Exercises: 2, 5, 6
+2)
+```{r}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, colour = drv)) +
+  geom_point() +
+  geom_smooth(se = FALSE)
+```
+A scatterplot is produced with displ on the x-axis and hwy on the y-axis. The plot is colored with drv.
+
+5)
+```{r}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_smooth()
+
+ggplot() +
+  geom_point(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_smooth(data = mpg, mapping = aes(x = displ, y = hwy))
+```
+The two plots will look the same because we are using the same mapping and data.
+
+6)
+```{r}
+install.packages("gridExtra")
+install.packages("cowplot")
+library(cowplot)
+```
+The graphs are as shown below
+```{r}
+GraphA <- ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point() +
+  geom_smooth(se = FALSE)
+  
+GraphB<- ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point() +
+  geom_smooth(mapping = aes(group = drv), se = FALSE)
+  
+GC <- ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color=drv)) + 
+  geom_point() +
+  geom_smooth(se = FALSE)
+  
+GD <- ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point(mapping = aes(color=drv)) +
+  geom_smooth(se = FALSE)
+  
+GE <- ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point(mapping = aes(color=drv)) +
+  geom_smooth(se = FALSE, mapping = aes(linetype = drv))
+  
+GF <- ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point(mapping = aes(color=drv)) + 
+  geom_point(shape = 21, color = "white", stroke = 1)
+theme_set(theme_gray())
+plot_grid(GA, GB, GC, GD,GE,GF, labels=c("GA","GB","GC", "GD","GE","GF"), ncol=2, nrow = 3)
+```
+
+
+#Sections: Statistical Transformations
+
+#Exercises: 1, 2, 5
+1)The default for stats_summmary() is geom_pointrange()
+```{r}
+ggplot(data = diamonds) +
+  geom_pointrange(
+    mapping = aes(x = cut, y = depth),
+    stat = "summary"
+  )
+```
+
+2) Geom_col and geom_bar both have different default stat. Stat_identity is the default stat of geom_col while for geom_bar is stat_count.
+
+5) Not including group=1 will, all the bars will be of equal height of 1.
+ 
+ 
+ #Sections: Position Adjustments
+
+#Exercises: 1, 2, 3
+```{r}
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+geom_point()
+```
+There is an overplotting problem. We can use the jitter position adjustment to solve the problem.
+```{r}
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+  geom_point(position = "jitter")
+```
+
+2)
+```{r}
+?geom_jitter()
+```
+The parameters are width ad heigth.
+
+3) geom_jitter() vs geom_count()
+geom_gitter introduces random variation to the points while geom_count sizes the points according to the number of the observations.
+
+
+#Sections: Coordinate Systems
+
+#Exercises: 1, 3, 4
+1)A pie chart is made by applying the polar coordinates to a stacked bar chart.
+```{r}
+ggplot(mpg, aes(x = factor(1), fill = fl)) +
+  geom_bar()
+```
+
+```{r}
+ggplot(mpg, aes(x = factor(1), fill = fl)) +
+  geom_bar(width = 1) +
+  coord_polar(theta = "y")
+```
+
+3)coord_map uses the map projections to try fit the three dimensional earth to a 2D plane while coord_quickmap() uses an approximation map but faster projections.
+
+4)
+```{r}
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+  geom_point() + 
+  geom_abline() +
+  coord_fixed()
+```
+The coord_fixed()ensures that geom_abline() produces a line at 45 degrees.
+
