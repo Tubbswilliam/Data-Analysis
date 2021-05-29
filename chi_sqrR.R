@@ -8,3 +8,9 @@ tbl
 prop_tbl <- prop.table(tbl, 2)
 prop_tbl
 ##################################################
+#Chi-square test
+X2 <- chisq.test(tbl, correct = FALSE)
+X2$expected
+
+#Constructing the confidence interval
+prop.test(table(data$time,data$pctremember),correct = FALSE, conf.level = 0.95)
