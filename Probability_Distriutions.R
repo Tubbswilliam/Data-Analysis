@@ -24,3 +24,13 @@ pnorm(q=-1,mean=0,sd=1)
 coinflip<-rbinom(10000,10,0.5)
 hist(coinflip)
 
+#Geometric and exponential distribution
+fairCoin<-rgeom(10000,0.5)+1
+fairCoin
+
+exponential_data<-rexp(n=100000,rate=1)
+exponential_data
+
+#Poisson Distribution
+PoissonData<-rpois(n=10000,lambda = 1)
+PoissonData
